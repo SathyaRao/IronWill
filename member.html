@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - IRON WILL</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><img src="images/logo.png" alt="IRON WILL">IRON WILL</a>
+        <ul class="nav-links">
+            <li><a href="member.html">My Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Member Lookup -->
+        <div class="form-container" id="lookupSection">
+            <h2>Find Your Profile</h2>
+            <p style="color:#aaa; margin-bottom:1rem;">Enter your phone number to view your details.</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="lookupPhone">Phone Number</label>
+                    <input type="tel" id="lookupPhone" placeholder="Enter your registered phone number">
+                </div>
+                <div class="form-group" style="display:flex; align-items:flex-end;">
+                    <button class="btn btn-primary" onclick="lookupMember()">View Profile</button>
+                </div>
+            </div>
+            <p id="lookupError" style="color:#dc3545; margin-top:0.5rem; display:none;">No member found with this phone number.</p>
+        </div>
+
+        <!-- Member Profile (hidden until lookup) -->
+        <div id="profileSection" style="display:none;">
+
+            <!-- Member Info -->
+            <div class="form-container">
+                <h2>My Details</h2>
+                <div class="dashboard-cards" style="margin-top:1rem;">
+                    <div class="card">
+                        <h3>Name</h3>
+                        <div class="stat" id="profileName" style="font-size:1.4rem;">-</div>
+                    </div>
+                    <div class="card">
+                        <h3>Phone</h3>
+                        <div class="stat" id="profilePhone" style="font-size:1.4rem;">-</div>
+                    </div>
+                    <div class="card">
+                        <h3>Plan</h3>
+                        <div class="stat" id="profilePlan" style="font-size:1.4rem;">-</div>
+                    </div>
+                    <div class="card">
+                        <h3>Status</h3>
+                        <div id="profileStatus">-</div>
+                    </div>
+                    <div class="card">
+                        <h3>Join Date</h3>
+                        <div class="stat" id="profileJoinDate" style="font-size:1.4rem;">-</div>
+                    </div>
+                    <div class="card">
+                        <h3>Total Attendance</h3>
+                        <div class="stat" id="profileAttendanceCount">0</div>
+                        <div class="label">days this month</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance History -->
+            <div class="table-container" style="margin-bottom:1.5rem;">
+                <h2 style="margin-bottom:1rem;">Attendance History (Last 30 Days)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Check-in Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profileAttendance">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Fee History -->
+            <div class="table-container" style="margin-bottom:1.5rem;">
+                <h2 style="margin-bottom:1rem;">Fee History</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Paid Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profileFees">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Workout History -->
+            <div class="table-container" style="margin-bottom:1.5rem;">
+                <h2 style="margin-bottom:1rem;">Workout History</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Exercises</th>
+                            <th>Duration</th>
+                            <th>Sets/Reps</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="profileWorkouts">
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="text-align:center; margin-top:1rem;">
+                <button class="btn btn-primary" onclick="showLookup()">Switch Member</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/member.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gym Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><img src="images/logo.png" alt="IRON WILL">IRON WILL</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="admin.html">Members</a></li>
+            <li><a href="attendance.html">Attendance</a></li>
+            <li><a href="fees.html">Fees</a></li>
+            <li><a href="workouts.html">Workouts</a></li>
+            <li><a href="member.html">My Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Member Management</h1>
+
+        <!-- Add Member Form -->
+        <div class="form-container">
+            <h2 id="formTitle">Add New Member</h2>
+            <form id="memberForm">
+                <input type="hidden" id="memberId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="memberName">Full Name *</label>
+                        <input type="text" id="memberName" placeholder="Enter full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberPhone">Phone Number *</label>
+                        <input type="tel" id="memberPhone" placeholder="Enter phone number" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="memberEmail">Email</label>
+                        <input type="email" id="memberEmail" placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label for="memberPlan">Membership Plan *</label>
+                        <select id="memberPlan" required>
+                            <option value="">Select Plan</option>
+                            <option value="monthly">Monthly - &#8377;1,500</option>
+                            <option value="quarterly">Quarterly - &#8377;4,000</option>
+                            <option value="half-yearly">Half Yearly - &#8377;7,000</option>
+                            <option value="yearly">Yearly - &#8377;12,000</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="memberJoinDate">Join Date *</label>
+                        <input type="date" id="memberJoinDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memberStatus">Status</label>
+                        <select id="memberStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="memberAddress">Address</label>
+                    <textarea id="memberAddress" rows="2" placeholder="Enter address"></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Add Member</button>
+                    <button type="button" class="btn btn-danger" id="cancelBtn" style="display:none;" onclick="cancelEdit()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search by name or phone...">
+            <select id="filterStatus">
+                <option value="all">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+
+        <!-- Members Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Plan</th>
+                        <th>Join Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="membersTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <h2>Confirm Delete</h2>
+            <p>Are you sure you want to delete this member? This will also remove their attendance, fee, and workout records.</p>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                <button class="btn btn-primary" onclick="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

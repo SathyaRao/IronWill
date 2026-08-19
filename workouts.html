@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workouts - Gym Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><img src="images/logo.png" alt="IRON WILL">IRON WILL</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="admin.html">Members</a></li>
+            <li><a href="attendance.html">Attendance</a></li>
+            <li><a href="fees.html">Fees</a></li>
+            <li><a href="workouts.html">Workouts</a></li>
+            <li><a href="member.html">My Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Workout Tracker</h1>
+
+        <!-- Add Workout -->
+        <div class="form-container">
+            <h2 id="workoutFormTitle">Log Workout</h2>
+            <form id="workoutForm">
+                <input type="hidden" id="workoutId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="workoutMember">Member *</label>
+                        <select id="workoutMember" required>
+                            <option value="">Select Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workoutDate">Date *</label>
+                        <input type="date" id="workoutDate" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="workoutType">Workout Type *</label>
+                        <select id="workoutType" required>
+                            <option value="">Select Type</option>
+                            <option value="chest">Chest</option>
+                            <option value="back">Back</option>
+                            <option value="shoulders">Shoulders</option>
+                            <option value="arms">Arms</option>
+                            <option value="legs">Legs</option>
+                            <option value="core">Core</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="full-body">Full Body</option>
+                            <option value="stretching">Stretching / Yoga</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workoutDuration">Duration (minutes) *</label>
+                        <input type="number" id="workoutDuration" placeholder="e.g. 60" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="workoutExercises">Exercises *</label>
+                    <textarea id="workoutExercises" rows="2" placeholder="e.g. Bench Press 4x12, Incline Dumbbell 3x10, Cable Fly 3x15" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="workoutSets">Sets / Reps</label>
+                        <input type="text" id="workoutSets" placeholder="e.g. 4x12, 3x10">
+                    </div>
+                    <div class="form-group">
+                        <label for="workoutNotes">Notes</label>
+                        <input type="text" id="workoutNotes" placeholder="Any notes...">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="submit" class="btn btn-primary" id="workoutSubmitBtn">Log Workout</button>
+                    <button type="button" class="btn btn-danger" id="workoutCancelBtn" style="display:none;" onclick="cancelWorkoutEdit()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Filter -->
+        <div class="search-bar">
+            <select id="filterWorkoutMember">
+                <option value="all">All Members</option>
+            </select>
+            <select id="filterWorkoutType">
+                <option value="all">All Types</option>
+                <option value="chest">Chest</option>
+                <option value="back">Back</option>
+                <option value="shoulders">Shoulders</option>
+                <option value="arms">Arms</option>
+                <option value="legs">Legs</option>
+                <option value="core">Core</option>
+                <option value="cardio">Cardio</option>
+                <option value="full-body">Full Body</option>
+                <option value="stretching">Stretching / Yoga</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="date" id="filterWorkoutDate">
+            <button class="btn btn-primary" onclick="renderWorkouts()">Filter</button>
+        </div>
+
+        <!-- Workouts Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Exercises</th>
+                        <th>Duration</th>
+                        <th>Sets/Reps</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="workoutsTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/workouts.js"></script>
+</body>
+</html>

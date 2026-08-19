@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - Gym Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><img src="images/logo.png" alt="IRON WILL">IRON WILL</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="admin.html">Members</a></li>
+            <li><a href="attendance.html">Attendance</a></li>
+            <li><a href="fees.html">Fees</a></li>
+            <li><a href="workouts.html">Workouts</a></li>
+            <li><a href="member.html">My Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Attendance Tracker</h1>
+
+        <!-- Mark Attendance -->
+        <div class="form-container">
+            <h2>Mark Attendance</h2>
+            <form id="attendanceForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="attendanceMember">Member *</label>
+                        <select id="attendanceMember" required>
+                            <option value="">Select Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="attendanceDate">Date *</label>
+                        <input type="date" id="attendanceDate" required>
+                    </div>
+                    <div class="form-group" style="display:flex; align-items:flex-end;">
+                        <button type="submit" class="btn btn-success">Mark Present</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Today's Summary -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <h3>Today's Attendance</h3>
+                <div class="stat" id="todayCount">0</div>
+                <div class="label">members checked in</div>
+            </div>
+            <div class="card">
+                <h3>This Month</h3>
+                <div class="stat" id="monthCount">0</div>
+                <div class="label">total check-ins</div>
+            </div>
+            <div class="card">
+                <h3>Most Regular</h3>
+                <div class="stat" id="topMember" style="font-size:1.2rem;">-</div>
+                <div class="label">this month</div>
+            </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="search-bar">
+            <input type="date" id="filterDate" value="">
+            <select id="filterMember">
+                <option value="all">All Members</option>
+            </select>
+            <button class="btn btn-primary" onclick="renderAttendance()">Filter</button>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Date</th>
+                        <th>Check-in Time</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTable">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/attendance.js"></script>
+</body>
+</html>

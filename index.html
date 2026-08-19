@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRON WILL - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><img src="images/logo.png" alt="IRON WILL">IRON WILL</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="admin.html">Members</a></li>
+            <li><a href="attendance.html">Attendance</a></li>
+            <li><a href="fees.html">Fees</a></li>
+            <li><a href="workouts.html">Workouts</a></li>
+            <li><a href="member.html">My Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Dashboard</h1>
+
+        <!-- Stats Cards -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <h3>Total Members</h3>
+                <div class="stat" id="totalMembers">0</div>
+                <div class="label">registered members</div>
+            </div>
+            <div class="card">
+                <h3>Active Members</h3>
+                <div class="stat" id="activeMembers">0</div>
+                <div class="label">currently active</div>
+            </div>
+            <div class="card">
+                <h3>Today's Attendance</h3>
+                <div class="stat" id="todayAttendance">0</div>
+                <div class="label">checked in today</div>
+            </div>
+            <div class="card">
+                <h3>Pending Fees</h3>
+                <div class="stat" id="pendingFees">0</div>
+                <div class="label">unpaid records</div>
+            </div>
+            <div class="card">
+                <h3>Total Revenue</h3>
+                <div class="stat" id="totalRevenue">&#8377;0</div>
+                <div class="label">all time collected</div>
+            </div>
+            <div class="card">
+                <h3>This Month Revenue</h3>
+                <div class="stat" id="monthRevenue">&#8377;0</div>
+                <div class="label" id="currentMonthLabel">-</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="form-container" style="margin-bottom: 2rem;">
+            <h2>Quick Actions</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                <a href="admin.html" class="btn btn-primary">+ Add Member</a>
+                <a href="attendance.html" class="btn btn-success">Mark Attendance</a>
+                <a href="fees.html" class="btn btn-primary">Record Payment</a>
+                <a href="workouts.html" class="btn btn-success">Log Workout</a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+
+            <!-- Today's Check-ins -->
+            <div class="table-container">
+                <h2 style="margin-bottom: 1rem;">Today's Check-ins</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="todayCheckins">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recent Payments -->
+            <div class="table-container">
+                <h2 style="margin-bottom: 1rem;">Recent Payments</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentPayments">
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- Pending Fees List -->
+        <div class="table-container" style="margin-top: 1.5rem;">
+            <h2 style="margin-bottom: 1rem;">Pending / Overdue Fees</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Amount</th>
+                        <th>Month</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingFeesList">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

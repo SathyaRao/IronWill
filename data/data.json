@@ -1,0 +1,18 @@
+{
+  "members": [
+    {
+      "name": "Sathya Rao",
+      "phone": "8618250594",
+      "email": "",
+      "plan": "quarterly",
+      "joinDate": "2025-09-09",
+      "status": "active",
+      "address": "",
+      "id": "1787114215167",
+      "createdAt": "2026-08-19T04:36:55.167Z"
+    }
+  ],
+  "attendance": [],
+  "fees": [],
+  "workouts": []
+}

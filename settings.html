@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - IRON WILL</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="logo"><img src="images/logo.png" alt="IRON WILL">IRON WILL</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Dashboard</a></li>
+            <li><a href="admin.html">Members</a></li>
+            <li><a href="attendance.html">Attendance</a></li>
+            <li><a href="fees.html">Fees</a></li>
+            <li><a href="workouts.html">Workouts</a></li>
+            <li><a href="member.html">My Profile</a></li>
+            <li><a href="settings.html">Settings</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1>Settings</h1>
+
+        <div class="form-container">
+            <h2>GitHub Data Storage</h2>
+            <p style="color:#aaa; margin-bottom:1rem;">
+                This app stores data in a JSON file in your GitHub repository using the GitHub API.
+                You need a Personal Access Token (PAT) with <strong>repo</strong> scope to enable write access.
+            </p>
+            <p style="color:#aaa; margin-bottom:1.5rem;">
+                <a href="https://github.com/settings/tokens/new" target="_blank" style="color:#fff;">Create a token here</a>
+                (select "repo" scope, set expiry as needed).
+            </p>
+
+            <div class="form-group">
+                <label for="githubToken">GitHub Personal Access Token</label>
+                <input type="password" id="githubToken" placeholder="Enter your GitHub token here">
+            </div>
+            <div style="display:flex; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="saveToken()">Save Token</button>
+                <button class="btn btn-success" onclick="testConnection()">Test Connection</button>
+                <button class="btn btn-danger" onclick="clearToken()">Clear Token</button>
+            </div>
+            <p id="connectionStatus" style="margin-top:1rem;"></p>
+        </div>
+
+        <div class="form-container">
+            <h2>Data Management</h2>
+            <p style="color:#aaa; margin-bottom:1rem;">Sync data between localStorage and GitHub.</p>
+            <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="pullFromGitHub()">Pull from GitHub</button>
+                <button class="btn btn-success" onclick="pushToGitHub()">Push to GitHub</button>
+                <button class="btn btn-danger" onclick="clearLocalData()">Clear Local Data</button>
+            </div>
+            <p id="syncStatus" style="margin-top:1rem;"></p>
+        </div>
+
+        <div class="form-container">
+            <h2>Configuration</h2>
+            <table>
+                <tr>
+                    <td style="color:#aaa;">Owner</td>
+                    <td><strong>sathyarao</strong></td>
+                </tr>
+                <tr>
+                    <td style="color:#aaa;">Repository</td>
+                    <td><strong>gym-management</strong></td>
+                </tr>
+                <tr>
+                    <td style="color:#aaa;">Data File</td>
+                    <td><strong>data/data.json</strong></td>
+                </tr>
+                <tr>
+                    <td style="color:#aaa;">Branch</td>
+                    <td><strong>main</strong></td>
+                </tr>
+                <tr>
+                    <td style="color:#aaa;">Token Status</td>
+                    <td id="tokenStatus">-</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/github-store.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = GitHubStore.getToken();
+            if (token) {
+                document.getElementById('githubToken').value = token;
+                document.getElementById('tokenStatus').innerHTML = '<span style="color:#2ea043;">Configured</span>';
+            } else {
+                document.getElementById('tokenStatus').innerHTML = '<span style="color:#f85149;">Not set</span>';
+            }
+        });
+
+        function saveToken() {
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token) {
+                Utils.showToast('Please enter a token', 'error');
+                return;
+            }
+            GitHubStore.setToken(token);
+            document.getElementById('tokenStatus').innerHTML = '<span style="color:#2ea043;">Configured</span>';
+            Utils.showToast('Token saved');
+        }
+
+        function clearToken() {
+            GitHubStore.setToken('');
+            document.getElementById('githubToken').value = '';
+            document.getElementById('tokenStatus').innerHTML = '<span style="color:#f85149;">Not set</span>';
+            Utils.showToast('Token cleared');
+        }
+
+        async function testConnection() {
+            const status = document.getElementById('connectionStatus');
+            status.innerHTML = '<span style="color:#aaa;">Testing connection...</span>';
+
+            const token = document.getElementById('githubToken').value.trim();
+            if (token) GitHubStore.setToken(token);
+
+            try {
+                const data = await GitHubStore.loadData();
+                if (data) {
+                    status.innerHTML = '<span style="color:#2ea043;">Connected successfully. Found ' +
+                        (data.members || []).length + ' members, ' +
+                        (data.attendance || []).length + ' attendance records.</span>';
+                } else {
+                    status.innerHTML = '<span style="color:#f85149;">Could not load data.</span>';
+                }
+            } catch (e) {
+                status.innerHTML = '<span style="color:#f85149;">Connection failed: ' + e.message + '</span>';
+            }
+        }
+
+        async function pullFromGitHub() {
+            const status = document.getElementById('syncStatus');
+            status.innerHTML = '<span style="color:#aaa;">Pulling data from GitHub...</span>';
+
+            try {
+                const data = await GitHubStore.loadData();
+                // Save to localStorage
+                localStorage.setItem(Store.MEMBERS_KEY, JSON.stringify(data.members || []));
+                localStorage.setItem(Store.ATTENDANCE_KEY, JSON.stringify(data.attendance || []));
+                localStorage.setItem(Store.FEES_KEY, JSON.stringify(data.fees || []));
+                localStorage.setItem(Store.WORKOUTS_KEY, JSON.stringify(data.workouts || []));
+
+                status.innerHTML = '<span style="color:#2ea043;">Pulled successfully. ' +
+                    (data.members || []).length + ' members loaded.</span>';
+                Utils.showToast('Data pulled from GitHub');
+            } catch (e) {
+                status.innerHTML = '<span style="color:#f85149;">Pull failed: ' + e.message + '</span>';
+            }
+        }
+
+        async function pushToGitHub() {
+            const status = document.getElementById('syncStatus');
+
+            if (!GitHubStore.isConfigured()) {
+                status.innerHTML = '<span style="color:#f85149;">Please set a GitHub token first.</span>';
+                return;
+            }
+
+            status.innerHTML = '<span style="color:#aaa;">Pushing data to GitHub...</span>';
+
+            try {
+                const data = {
+                    members: Store.getMembers(),
+                    attendance: Store.getAttendance(),
+                    fees: Store.getFees(),
+                    workouts: Store.getWorkouts(),
+                };
+
+                // Load first to get SHA
+                await GitHubStore.loadData();
+                const success = await GitHubStore.saveData(data);
+
+                if (success) {
+                    status.innerHTML = '<span style="color:#2ea043;">Pushed successfully to GitHub.</span>';
+                    Utils.showToast('Data pushed to GitHub');
+                } else {
+                    status.innerHTML = '<span style="color:#f85149;">Push failed. Check token permissions.</span>';
+                }
+            } catch (e) {
+                status.innerHTML = '<span style="color:#f85149;">Push failed: ' + e.message + '</span>';
+            }
+        }
+
+        function clearLocalData() {
+            if (!confirm('Clear all local data? This does not affect GitHub data.')) return;
+            Store.clearAll();
+            Utils.showToast('Local data cleared');
+        }
+    </script>
+</body>
+</html>
