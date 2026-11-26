@@ -21,9 +21,20 @@
     var LOGIN_PAGE = 'login.html';
     var ADMIN_ONLY_PAGES = ['settings.html'];
 
+    // Default passwords are kept only as salted hashes (SHA-256 for https,
+    // djb2 'fb' form for file://) so the plaintext is never in the source.
+    // A password changed in Settings is stored per device and takes priority.
     var USERS = {
-        admin: { role: 'admin', label: 'Admin', defaultPassword: 'admin123' },
-        user: { role: 'user', label: 'User', defaultPassword: 'user123' },
+        admin: {
+            role: 'admin',
+            label: 'Admin',
+            defaultHash: { sha256: '8bf3a4b14258221d63461f9ad72d8f813f00f06d1ab218fa4f8b6a877b68e882', fallback: 'fb8e05398c' },
+        },
+        user: {
+            role: 'user',
+            label: 'User',
+            defaultHash: { sha256: '0141ac9d1c4c3545cfeefaf7006f1ecf63fd4de891b504612e31f848078fe0bd', fallback: 'fb2daf5f9d' },
+        },
     };
 
     function currentPage() {
@@ -120,7 +131,9 @@
             var user = USERS[username];
             if (!user || !password) return Promise.resolve(false);
             var stored = getStoredHash(username);
-            if (!stored) return Promise.resolve(password === user.defaultPassword);
+            if (!stored) {
+                stored = canUseSubtle() ? user.defaultHash.sha256 : user.defaultHash.fallback;
+            }
             return hashLike(stored, username, password).then(function (h) {
                 return !!h && h === stored;
             });

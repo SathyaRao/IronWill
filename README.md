@@ -99,7 +99,7 @@ Every page requires signing in on `login.html`. There are two accounts:
 
 | Account | Default password | Access |
 |---------|------------------|--------|
-| `admin` | `admin123` | Full access: add, edit and delete everything, plus Settings |
+| `admin` | Not published (ask the gym owner) | Full access: add, edit and delete everything, plus Settings |
 | `user`  | `user123`  | Read only: can view all pages except Settings; add/edit/delete controls are hidden and writes are refused |
 
 Change both passwords under **Settings > User Accounts** (admin only). Passwords are stored as hashes in the
