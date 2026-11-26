@@ -79,7 +79,7 @@ function renderMembers() {
             <td style="text-transform: capitalize;">${member.plan}</td>
             <td>${Utils.formatDate(member.joinDate)}</td>
             <td><span class="badge badge-${member.status === 'active' ? 'active' : 'inactive'}">${member.status}</span></td>
-            <td>
+            <td class="admin-only">
                 <button class="btn btn-sm btn-primary" onclick="editMember('${member.id}')">Edit</button>
                 <button class="btn btn-sm btn-danger" onclick="showDeleteModal('${member.id}')">Delete</button>
             </td>

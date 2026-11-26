@@ -92,3 +92,27 @@ location.reload();
 ## License
 
 MIT
+
+## Login and Roles
+
+Every page requires signing in on `login.html`. There are two accounts:
+
+| Account | Default password | Access |
+|---------|------------------|--------|
+| `admin` | `admin123` | Full access: add, edit and delete everything, plus Settings |
+| `user`  | `user123`  | Read only: can view all pages except Settings; add/edit/delete controls are hidden and writes are refused |
+
+Change both passwords under **Settings > User Accounts** (admin only). Passwords are stored as hashes in the
+browser, per device, and the login lasts until the browser tab is closed. This is a client-side gate for a
+static site, not server-enforced security: real write protection comes from the GitHub token, so only give
+write tokens to the admin's devices.
+
+## Data Storage and Token Transfer
+
+Data is read from and written to `data/data.json` in this repo through the GitHub API (`js/store.js`).
+Saving needs a Personal Access Token with write access, entered under **Settings > GitHub Data Storage**.
+
+To set up another device, use **Settings > Transfer Token to Another Device**: it creates a link and a QR code
+that open `login.html#token=...`. The token is saved on that device and removed from the address bar
+immediately. For a read-only device, don't transfer a write token: a public repo can be read without a
+token, and a private repo only needs a fine-grained token with read-only "Contents" permission.

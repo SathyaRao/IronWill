@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Gym Management</title>
+    <script src="js/auth.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -24,7 +25,7 @@
         <h1>Member Management</h1>
 
         <!-- Add Member Form -->
-        <div class="form-container">
+        <div class="form-container admin-only">
             <h2 id="formTitle">Add New Member</h2>
             <form id="memberForm">
                 <input type="hidden" id="memberId">
@@ -99,7 +100,7 @@
                         <th>Plan</th>
                         <th>Join Date</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th class="admin-only">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="membersTable">

@@ -422,3 +422,88 @@ table tr:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== Roles: read-only users never see admin controls ===== */
+html.role-user .admin-only {
+    display: none !important;
+}
+
+/* Nav: signed-in user + logout */
+.navbar .nav-links .nav-user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ccc;
+}
+
+.nav-user-name {
+    font-weight: 600;
+    color: #fff;
+}
+
+.role-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid #555;
+    white-space: nowrap;
+}
+
+.role-badge-admin {
+    color: #3fb950;
+    border-color: #3fb950;
+}
+
+.role-badge-user {
+    color: #f0c040;
+    border-color: #f0c040;
+}
+
+/* Login page */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 380px;
+    margin-bottom: 0;
+}
+
+.login-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+.login-brand img {
+    height: 60px;
+    width: auto;
+}
+
+.login-submit {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.login-error {
+    color: #f85149;
+    margin: 0.5rem 0;
+}
+
+.login-note {
+    color: #3fb950;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+}

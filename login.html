@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - IRON WILL</title>
+    <script src="js/auth.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="form-container login-card">
+            <div class="login-brand">
+                <img src="images/logo.png" alt="IRON WILL">
+                <span>IRON WILL</span>
+            </div>
+            <h2>Sign in</h2>
+            <form id="loginForm" autocomplete="on">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <select id="loginUsername" required>
+                        <option value="user">User (read only)</option>
+                        <option value="admin">Admin (full access)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password" required>
+                </div>
+                <p id="loginError" class="login-error" hidden></p>
+                <button type="submit" class="btn btn-primary login-submit" id="loginBtn">Login</button>
+            </form>
+            <p id="tokenNotice" class="login-note" hidden>GitHub token loaded on this device. Sign in to continue.</p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var next = Auth.safeNext(params.get('next'));
+
+            // Already signed in: go straight to the app.
+            if (Auth.isLoggedIn()) {
+                window.location.replace(next);
+                return;
+            }
+
+            if (localStorage.getItem('github_token') && sessionStorage.getItem('ironwill-token-loaded') === '1') {
+                document.getElementById('tokenNotice').hidden = false;
+                sessionStorage.removeItem('ironwill-token-loaded');
+            }
+
+            var form = document.getElementById('loginForm');
+            var errorBox = document.getElementById('loginError');
+            var pwd = document.getElementById('loginPassword');
+            var btn = document.getElementById('loginBtn');
+            pwd.focus();
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                errorBox.hidden = true;
+                btn.disabled = true;
+                Auth.login(document.getElementById('loginUsername').value, pwd.value).then(function (ok) {
+                    btn.disabled = false;
+                    if (ok) {
+                        window.location.replace(next);
+                    } else {
+                        errorBox.textContent = 'Incorrect username or password.';
+                        errorBox.hidden = false;
+                        pwd.select();
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

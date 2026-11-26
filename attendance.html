@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance - Gym Management</title>
+    <script src="js/auth.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -24,7 +25,7 @@
         <h1>Attendance Tracker</h1>
 
         <!-- Mark Attendance -->
-        <div class="form-container">
+        <div class="form-container admin-only">
             <h2>Mark Attendance</h2>
             <form id="attendanceForm">
                 <div class="form-row">
@@ -81,7 +82,7 @@
                         <th>Member</th>
                         <th>Date</th>
                         <th>Check-in Time</th>
-                        <th>Actions</th>
+                        <th class="admin-only">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="attendanceTable">

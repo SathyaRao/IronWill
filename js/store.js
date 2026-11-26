@@ -15,6 +15,7 @@ const Store = {
     _sha: null,
     _loading: false,
     _initialized: false,
+    lastError: null, // message from the last failed load, or null
 
     // --- Token ---
     getToken() {
@@ -33,6 +34,7 @@ const Store = {
     async load() {
         if (this._loading) return this._data;
         this._loading = true;
+        this.lastError = null;
 
         try {
             const url = `https://api.github.com/repos/${this.OWNER}/${this.REPO}/contents/${this.FILE_PATH}?ref=${this.BRANCH}&_=${Date.now()}`;
@@ -44,6 +46,7 @@ const Store = {
 
             if (!response.ok) {
                 console.warn('GitHub load failed, using empty data:', response.status);
+                this.lastError = 'GitHub returned ' + response.status + (response.status === 404 ? ' (file or repo not found, or the repo is private and no token is set)' : response.status === 401 ? ' (token is invalid or expired)' : '');
                 this._data = this._default();
                 return this._data;
             }
@@ -55,6 +58,7 @@ const Store = {
             this._initialized = true;
         } catch (error) {
             console.error('Error loading from GitHub:', error);
+            this.lastError = error.message || String(error);
             this._data = this._data || this._default();
         } finally {
             this._loading = false;
@@ -65,6 +69,7 @@ const Store = {
 
     // --- Save data to GitHub ---
     async save() {
+        if (!this._canWrite()) return false;
         if (!this.isConfigured()) {
             console.warn('No GitHub token configured, cannot save.');
             return false;
@@ -118,6 +123,15 @@ const Store = {
         }
     },
 
+    // --- Role guard: only the admin may change data ---
+    _canWrite() {
+        if (window.Auth && !Auth.isAdmin()) {
+            if (window.Utils) Utils.showToast('Read-only access: changes are not allowed', 'error');
+            return false;
+        }
+        return true;
+    },
+
     // --- Default empty structure ---
     _default() {
         return { members: [], attendance: [], fees: [], workouts: [] };
@@ -138,6 +152,7 @@ const Store = {
     },
 
     async saveMember(member) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         member.id = member.id || Date.now().toString();
         member.createdAt = member.createdAt || new Date().toISOString();
@@ -148,6 +163,7 @@ const Store = {
     },
 
     async updateMember(id, updates) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         const index = this._data.members.findIndex(m => m.id === id);
         if (index !== -1) {
@@ -159,6 +175,7 @@ const Store = {
     },
 
     async deleteMember(id) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         this._data.members = this._data.members.filter(m => m.id !== id);
         this._data.attendance = (this._data.attendance || []).filter(a => a.memberId !== id);
@@ -181,6 +198,7 @@ const Store = {
     },
 
     async markAttendance(memberId, date) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         const record = {
             id: Date.now().toString(),
@@ -204,6 +222,7 @@ const Store = {
     },
 
     async deleteAttendance(id) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         this._data.attendance = (this._data.attendance || []).filter(a => a.id !== id);
         await this.save();
@@ -218,6 +237,7 @@ const Store = {
     },
 
     async addFeeRecord(feeRecord) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         feeRecord.id = feeRecord.id || Date.now().toString();
         feeRecord.createdAt = new Date().toISOString();
@@ -227,6 +247,7 @@ const Store = {
     },
 
     async updateFeeRecord(id, updates) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         const index = this._data.fees.findIndex(f => f.id === id);
         if (index !== -1) {
@@ -243,6 +264,7 @@ const Store = {
     },
 
     async deleteFee(id) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         this._data.fees = (this._data.fees || []).filter(f => f.id !== id);
         await this.save();
@@ -257,6 +279,7 @@ const Store = {
     },
 
     async addWorkout(workout) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         workout.id = workout.id || Date.now().toString();
         workout.createdAt = new Date().toISOString();
@@ -266,6 +289,7 @@ const Store = {
     },
 
     async updateWorkout(id, updates) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         const index = this._data.workouts.findIndex(w => w.id === id);
         if (index !== -1) {
@@ -282,6 +306,7 @@ const Store = {
     },
 
     async deleteWorkout(id) {
+        if (!this._canWrite()) return null;
         await this._ensure();
         this._data.workouts = (this._data.workouts || []).filter(w => w.id !== id);
         await this.save();
@@ -310,6 +335,7 @@ const Store = {
     // UTILITY
     // =========================================================================
     async clearAll() {
+        if (!this._canWrite()) return null;
         this._data = this._default();
         await this.save();
     },

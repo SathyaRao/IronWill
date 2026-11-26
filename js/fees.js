@@ -76,7 +76,7 @@ function renderFees() {
             <td><span class="badge badge-${fee.status}">${fee.status}</span></td>
             <td>${fee.paidDate ? Utils.formatDate(fee.paidDate) : '-'}</td>
             <td style="text-transform:capitalize;">${fee.paymentMode || '-'}</td>
-            <td>
+            <td class="admin-only">
                 <button class="btn btn-sm btn-primary" onclick="editFee('${fee.id}')">Edit</button>
                 <button class="btn btn-sm btn-success" onclick="markAsPaid('${fee.id}')" ${fee.status === 'paid' ? 'disabled style="opacity:0.5"' : ''}>Paid</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteFee('${fee.id}')">Delete</button>

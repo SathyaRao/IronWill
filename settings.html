@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - IRON WILL</title>
+    <script src="js/auth.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -23,20 +24,21 @@
     <div class="container">
         <h1>Settings</h1>
 
+        <!-- GitHub token -->
         <div class="form-container">
             <h2>GitHub Data Storage</h2>
             <p style="color:#aaa; margin-bottom:1rem;">
-                This app stores data in a JSON file in your GitHub repository using the GitHub API.
-                You need a Personal Access Token (PAT) with <strong>repo</strong> scope to enable write access.
+                All data is read from and written to <strong>data/data.json</strong> in the GitHub repository
+                using the GitHub API. Saving changes needs a Personal Access Token with write access to the repo.
             </p>
             <p style="color:#aaa; margin-bottom:1.5rem;">
-                <a href="https://github.com/settings/tokens/new" target="_blank" style="color:#fff;">Create a token here</a>
+                <a href="https://github.com/settings/tokens/new" target="_blank" rel="noopener" style="color:#fff;">Create a token here</a>
                 (select "repo" scope, set expiry as needed).
             </p>
 
             <div class="form-group">
                 <label for="githubToken">GitHub Personal Access Token</label>
-                <input type="password" id="githubToken" placeholder="Enter your GitHub token here">
+                <input type="password" id="githubToken" placeholder="Enter your GitHub token here" autocomplete="off">
             </div>
             <div style="display:flex; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
                 <button class="btn btn-primary" onclick="saveToken()">Save Token</button>
@@ -46,154 +48,248 @@
             <p id="connectionStatus" style="margin-top:1rem;"></p>
         </div>
 
+        <!-- Token transfer -->
         <div class="form-container">
-            <h2>Data Management</h2>
-            <p style="color:#aaa; margin-bottom:1rem;">Sync data between localStorage and GitHub.</p>
+            <h2>Transfer Token to Another Device</h2>
+            <p style="color:#aaa; margin-bottom:1rem;">
+                Copy the token to your phone or another browser without retyping it. Save the token above first,
+                then open the link or scan the QR code on the other device. It opens the login page with the token loaded.
+            </p>
+            <p style="color:#f0c040; margin-bottom:1.5rem; font-size:0.9rem;">
+                Note: the link contains the token. Only share it with your own devices and avoid sending it through
+                chat or email. The token stays in the URL after # (it is never sent to a server), and the app removes it
+                from the address bar as soon as it loads. A read-only device needs no write token: if the repo is public,
+                don't transfer a token there at all; if it is private, use a fine-grained token with read-only
+                "Contents" permission.
+            </p>
             <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-                <button class="btn btn-primary" onclick="pullFromGitHub()">Pull from GitHub</button>
-                <button class="btn btn-success" onclick="pushToGitHub()">Push to GitHub</button>
-                <button class="btn btn-danger" onclick="clearLocalData()">Clear Local Data</button>
+                <button class="btn btn-primary" onclick="generateTransfer()">Generate Link &amp; QR</button>
+                <button class="btn btn-success" onclick="copyTransferLink()">Copy Link</button>
             </div>
+            <div id="transferArea" style="display:none; margin-top:1.5rem;">
+                <div class="form-group">
+                    <label for="transferLink">Transfer link</label>
+                    <input type="text" id="transferLink" readonly onclick="this.select()">
+                </div>
+                <div id="qrcode" style="margin-top:1rem; display:inline-block; background:#fff; padding:12px; border-radius:8px;"></div>
+                <p style="color:#aaa; margin-top:0.75rem; font-size:0.9rem;">
+                    Scan this QR code with the phone's camera, then open the link. The token loads automatically.
+                </p>
+            </div>
+        </div>
+
+        <!-- Accounts -->
+        <div class="form-container">
+            <h2>User Accounts</h2>
+            <p style="color:#aaa; margin-bottom:1rem;">
+                <strong>admin</strong> has full access. <strong>user</strong> can view everything except Settings but
+                cannot add, edit or delete. Passwords are saved on this device only, so change them on each device you use.
+            </p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pwAccount">Account</label>
+                    <select id="pwAccount">
+                        <option value="user">user (read only)</option>
+                        <option value="admin">admin (full access)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="pwAdminCurrent">Your admin password</label>
+                    <input type="password" id="pwAdminCurrent" placeholder="Confirm it's you" autocomplete="current-password">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pwNew">New password</label>
+                    <input type="password" id="pwNew" placeholder="At least 4 characters" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="pwConfirm">Confirm new password</label>
+                    <input type="password" id="pwConfirm" placeholder="Repeat new password" autocomplete="new-password">
+                </div>
+            </div>
+            <div style="display:flex; gap:1rem; margin-top:1rem; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="changePassword()">Change Password</button>
+                <button class="btn btn-danger" onclick="resetPassword()">Reset to Default</button>
+            </div>
+            <p id="passwordStatus" style="margin-top:1rem;"></p>
+        </div>
+
+        <!-- Data -->
+        <div class="form-container">
+            <h2>Data</h2>
+            <p style="color:#aaa; margin-bottom:1rem;">
+                Every change is saved to GitHub straight away. Use Reload to pick up changes made on another device.
+            </p>
+            <button class="btn btn-primary" onclick="reloadData()">Reload from GitHub</button>
             <p id="syncStatus" style="margin-top:1rem;"></p>
         </div>
 
+        <!-- Configuration -->
         <div class="form-container">
             <h2>Configuration</h2>
             <table>
-                <tr>
-                    <td style="color:#aaa;">Owner</td>
-                    <td><strong>sathyarao</strong></td>
-                </tr>
-                <tr>
-                    <td style="color:#aaa;">Repository</td>
-                    <td><strong>gym-management</strong></td>
-                </tr>
-                <tr>
-                    <td style="color:#aaa;">Data File</td>
-                    <td><strong>data/data.json</strong></td>
-                </tr>
-                <tr>
-                    <td style="color:#aaa;">Branch</td>
-                    <td><strong>main</strong></td>
-                </tr>
-                <tr>
-                    <td style="color:#aaa;">Token Status</td>
-                    <td id="tokenStatus">-</td>
-                </tr>
+                <tr><td style="color:#aaa;">Owner</td><td><strong id="cfgOwner">-</strong></td></tr>
+                <tr><td style="color:#aaa;">Repository</td><td><strong id="cfgRepo">-</strong></td></tr>
+                <tr><td style="color:#aaa;">Data File</td><td><strong id="cfgFile">-</strong></td></tr>
+                <tr><td style="color:#aaa;">Branch</td><td><strong id="cfgBranch">-</strong></td></tr>
+                <tr><td style="color:#aaa;">Token Status</td><td id="tokenStatus">-</td></tr>
             </table>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <script src="js/store.js"></script>
-    <script src="js/github-store.js"></script>
     <script src="js/utils.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = GitHubStore.getToken();
-            if (token) {
-                document.getElementById('githubToken').value = token;
-                document.getElementById('tokenStatus').innerHTML = '<span style="color:#2ea043;">Configured</span>';
-            } else {
-                document.getElementById('tokenStatus').innerHTML = '<span style="color:#f85149;">Not set</span>';
-            }
+        function setStatus(id, message, color) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
+            if (!message) return;
+            const span = document.createElement('span');
+            span.style.color = color;
+            span.textContent = message;
+            el.appendChild(span);
+        }
+
+        function showTokenStatus() {
+            const configured = Store.isConfigured();
+            setStatus('tokenStatus', configured ? 'Configured' : 'Not set', configured ? '#3fb950' : '#f85149');
+        }
+
+        function dataSummary(data) {
+            return (data.members || []).length + ' members, ' +
+                (data.attendance || []).length + ' attendance, ' +
+                (data.fees || []).length + ' fee and ' +
+                (data.workouts || []).length + ' workout records';
+        }
+
+        window.addEventListener('dataReady', () => {
+            document.getElementById('cfgOwner').textContent = Store.OWNER;
+            document.getElementById('cfgRepo').textContent = Store.REPO;
+            document.getElementById('cfgFile').textContent = Store.FILE_PATH;
+            document.getElementById('cfgBranch').textContent = Store.BRANCH;
+            document.getElementById('githubToken').value = Store.getToken();
+            showTokenStatus();
         });
 
+        /* ---------- Token ---------- */
         function saveToken() {
             const token = document.getElementById('githubToken').value.trim();
             if (!token) {
                 Utils.showToast('Please enter a token', 'error');
                 return;
             }
-            GitHubStore.setToken(token);
-            document.getElementById('tokenStatus').innerHTML = '<span style="color:#2ea043;">Configured</span>';
+            Store.setToken(token);
+            showTokenStatus();
             Utils.showToast('Token saved');
         }
 
         function clearToken() {
-            GitHubStore.setToken('');
+            if (!confirm('Remove the GitHub token from this device? Changes cannot be saved until a token is added again.')) return;
+            localStorage.removeItem('github_token');
             document.getElementById('githubToken').value = '';
-            document.getElementById('tokenStatus').innerHTML = '<span style="color:#f85149;">Not set</span>';
+            showTokenStatus();
             Utils.showToast('Token cleared');
         }
 
         async function testConnection() {
-            const status = document.getElementById('connectionStatus');
-            status.innerHTML = '<span style="color:#aaa;">Testing connection...</span>';
-
+            setStatus('connectionStatus', 'Testing connection...', '#aaa');
             const token = document.getElementById('githubToken').value.trim();
-            if (token) GitHubStore.setToken(token);
+            if (token) Store.setToken(token);
+            showTokenStatus();
 
-            try {
-                const data = await GitHubStore.loadData();
-                if (data) {
-                    status.innerHTML = '<span style="color:#2ea043;">Connected successfully. Found ' +
-                        (data.members || []).length + ' members, ' +
-                        (data.attendance || []).length + ' attendance records.</span>';
-                } else {
-                    status.innerHTML = '<span style="color:#f85149;">Could not load data.</span>';
-                }
-            } catch (e) {
-                status.innerHTML = '<span style="color:#f85149;">Connection failed: ' + e.message + '</span>';
+            const data = await Store.load();
+            if (Store.lastError) {
+                setStatus('connectionStatus', 'Connection failed: ' + Store.lastError, '#f85149');
+            } else {
+                setStatus('connectionStatus', 'Connected. Found ' + dataSummary(data) + '.', '#3fb950');
             }
         }
 
-        async function pullFromGitHub() {
-            const status = document.getElementById('syncStatus');
-            status.innerHTML = '<span style="color:#aaa;">Pulling data from GitHub...</span>';
+        /* ---------- Token transfer ---------- */
+        function buildTransferUrl() {
+            const token = document.getElementById('githubToken').value.trim() || Store.getToken();
+            if (!token) {
+                Utils.showToast('Save a token first', 'error');
+                return null;
+            }
+            return Auth.buildTokenTransferUrl(token);
+        }
 
-            try {
-                const data = await GitHubStore.loadData();
-                // Save to localStorage
-                localStorage.setItem(Store.MEMBERS_KEY, JSON.stringify(data.members || []));
-                localStorage.setItem(Store.ATTENDANCE_KEY, JSON.stringify(data.attendance || []));
-                localStorage.setItem(Store.FEES_KEY, JSON.stringify(data.fees || []));
-                localStorage.setItem(Store.WORKOUTS_KEY, JSON.stringify(data.workouts || []));
+        function generateTransfer() {
+            const url = buildTransferUrl();
+            if (!url) return;
+            document.getElementById('transferArea').style.display = 'block';
+            document.getElementById('transferLink').value = url;
 
-                status.innerHTML = '<span style="color:#2ea043;">Pulled successfully. ' +
-                    (data.members || []).length + ' members loaded.</span>';
-                Utils.showToast('Data pulled from GitHub');
-            } catch (e) {
-                status.innerHTML = '<span style="color:#f85149;">Pull failed: ' + e.message + '</span>';
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+            if (typeof qrcode === 'function') {
+                const qr = qrcode(0, 'M');
+                qr.addData(url);
+                qr.make();
+                container.innerHTML = qr.createImgTag(5, 8);
+            } else {
+                container.innerHTML = '<span style="color:#f85149;">QR library failed to load. Use the link instead.</span>';
             }
         }
 
-        async function pushToGitHub() {
-            const status = document.getElementById('syncStatus');
-
-            if (!GitHubStore.isConfigured()) {
-                status.innerHTML = '<span style="color:#f85149;">Please set a GitHub token first.</span>';
-                return;
-            }
-
-            status.innerHTML = '<span style="color:#aaa;">Pushing data to GitHub...</span>';
-
-            try {
-                const data = {
-                    members: Store.getMembers(),
-                    attendance: Store.getAttendance(),
-                    fees: Store.getFees(),
-                    workouts: Store.getWorkouts(),
-                };
-
-                // Load first to get SHA
-                await GitHubStore.loadData();
-                const success = await GitHubStore.saveData(data);
-
-                if (success) {
-                    status.innerHTML = '<span style="color:#2ea043;">Pushed successfully to GitHub.</span>';
-                    Utils.showToast('Data pushed to GitHub');
-                } else {
-                    status.innerHTML = '<span style="color:#f85149;">Push failed. Check token permissions.</span>';
-                }
-            } catch (e) {
-                status.innerHTML = '<span style="color:#f85149;">Push failed: ' + e.message + '</span>';
+        function copyTransferLink() {
+            const url = buildTransferUrl();
+            if (!url) return;
+            document.getElementById('transferArea').style.display = 'block';
+            const el = document.getElementById('transferLink');
+            el.value = url;
+            const done = () => Utils.showToast('Link copied');
+            const fallback = () => { el.select(); document.execCommand('copy'); done(); };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(done).catch(fallback);
+            } else {
+                fallback();
             }
         }
 
-        function clearLocalData() {
-            if (!confirm('Clear all local data? This does not affect GitHub data.')) return;
-            Store.clearAll();
-            Utils.showToast('Local data cleared');
+        /* ---------- Accounts ---------- */
+        async function changePassword() {
+            const account = document.getElementById('pwAccount').value;
+            const current = document.getElementById('pwAdminCurrent').value;
+            const next = document.getElementById('pwNew').value;
+            const confirmNext = document.getElementById('pwConfirm').value;
+
+            if (next.length < 4) return setStatus('passwordStatus', 'New password must be at least 4 characters.', '#f85149');
+            if (next !== confirmNext) return setStatus('passwordStatus', 'New passwords do not match.', '#f85149');
+            if (!(await Auth.verify('admin', current))) return setStatus('passwordStatus', 'Your admin password is incorrect.', '#f85149');
+
+            if (await Auth.setPassword(account, next)) {
+                ['pwAdminCurrent', 'pwNew', 'pwConfirm'].forEach(id => { document.getElementById(id).value = ''; });
+                setStatus('passwordStatus', 'Password for "' + account + '" changed on this device.', '#3fb950');
+                Utils.showToast('Password updated');
+            } else {
+                setStatus('passwordStatus', 'Could not change the password.', '#f85149');
+            }
+        }
+
+        async function resetPassword() {
+            const account = document.getElementById('pwAccount').value;
+            const current = document.getElementById('pwAdminCurrent').value;
+            if (!(await Auth.verify('admin', current))) return setStatus('passwordStatus', 'Enter your admin password to reset.', '#f85149');
+            if (!confirm('Reset the "' + account + '" password to its default on this device?')) return;
+            Auth.resetPassword(account);
+            document.getElementById('pwAdminCurrent').value = '';
+            setStatus('passwordStatus', 'Password for "' + account + '" reset to its default on this device.', '#3fb950');
+        }
+
+        /* ---------- Data ---------- */
+        async function reloadData() {
+            setStatus('syncStatus', 'Reloading from GitHub...', '#aaa');
+            const data = await Store.load();
+            if (Store.lastError) {
+                setStatus('syncStatus', 'Reload failed: ' + Store.lastError, '#f85149');
+            } else {
+                setStatus('syncStatus', 'Reloaded ' + dataSummary(data) + '.', '#3fb950');
+                Utils.showToast('Data reloaded');
+            }
         }
     </script>
 </body>

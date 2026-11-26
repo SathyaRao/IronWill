@@ -74,7 +74,7 @@ function renderWorkouts() {
             <td>${w.duration} min</td>
             <td>${w.sets || '-'}</td>
             <td>${w.notes || '-'}</td>
-            <td>
+            <td class="admin-only">
                 <button class="btn btn-sm btn-primary" onclick="editWorkout('${w.id}')">Edit</button>
                 <button class="btn btn-sm btn-danger" onclick="deleteWorkout('${w.id}')">Delete</button>
             </td>

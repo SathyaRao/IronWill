@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workouts - Gym Management</title>
+    <script src="js/auth.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -24,7 +25,7 @@
         <h1>Workout Tracker</h1>
 
         <!-- Add Workout -->
-        <div class="form-container">
+        <div class="form-container admin-only">
             <h2 id="workoutFormTitle">Log Workout</h2>
             <form id="workoutForm">
                 <input type="hidden" id="workoutId">
@@ -117,7 +118,7 @@
                         <th>Duration</th>
                         <th>Sets/Reps</th>
                         <th>Notes</th>
-                        <th>Actions</th>
+                        <th class="admin-only">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="workoutsTable">

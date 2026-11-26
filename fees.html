@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fees - Gym Management</title>
+    <script src="js/auth.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -24,7 +25,7 @@
         <h1>Fees Management</h1>
 
         <!-- Add Fee Record -->
-        <div class="form-container">
+        <div class="form-container admin-only">
             <h2 id="feeFormTitle">Add Fee Record</h2>
             <form id="feeForm">
                 <input type="hidden" id="feeId">
@@ -125,7 +126,7 @@
                         <th>Status</th>
                         <th>Paid Date</th>
                         <th>Mode</th>
-                        <th>Actions</th>
+                        <th class="admin-only">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="feesTable">

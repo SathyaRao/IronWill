@@ -63,7 +63,7 @@ function renderAttendance() {
             <td>${Utils.getMemberName(record.memberId)}</td>
             <td>${Utils.formatDate(record.date)}</td>
             <td>${record.checkIn}</td>
-            <td><button class="btn btn-sm btn-danger" onclick="deleteAttendance('${record.id}')">Remove</button></td>
+            <td class="admin-only"><button class="btn btn-sm btn-danger" onclick="deleteAttendance('${record.id}')">Remove</button></td>
         </tr>
     `).join('');
 }
